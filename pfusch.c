@@ -33,6 +33,18 @@ point random_point_in_circle()
     return p;
 }
 
+float estimate_pi(int num_samples) {
+    int inside_circle = 0;
+    for (int i = 0; i < num_samples; ++i) {
+        point p = random_point();
+        if (is_point_in_circle(p)) {
+            inside_circle++;
+        }
+    }
+    // Area of square: 4, area of circle: pi, ratio: pi/4
+    return 4.0f * inside_circle / num_samples;
+}
+
 
 int main(void) {
 
@@ -45,6 +57,10 @@ int main(void) {
     } else {
         printf("The point (%.2f, %.2f) is NOT inside the unit circle.\n", p.x, p.y);
     }
+    
+        int samples = 1000000;
+        float pi = estimate_pi(samples);
+        printf("Estimated pi with %d samples: %f\n", samples, pi);
 
     return 0;
 }
