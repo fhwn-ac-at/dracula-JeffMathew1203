@@ -5,10 +5,11 @@
 #include "mcmc.h"
 #include "game.h"
 
+// Runs multiple simulations and collects statistics about wins, losses, and usage of snakes/ladders
 SimulationResult run_simulation(Board* board, int runs, int max_steps, int exact_win) {
     SimulationResult result = {0};
-    result.snake_freq = calloc(board->size + 1, sizeof(int));
-    result.ladder_freq = calloc(board->size + 1, sizeof(int));
+    result.snake_freq = calloc(board->size + 1, sizeof(int));   // Track snake usage
+    result.ladder_freq = calloc(board->size + 1, sizeof(int));  // Track ladder usage
     result.games_won = 0;
     result.games_failed = 0;
 
@@ -18,10 +19,12 @@ SimulationResult run_simulation(Board* board, int runs, int max_steps, int exact
     int rolls, path[1024], len;
 
     for (int i = 0; i < runs; i++) {
+        // Simulate a single game
         int won = simulate_game(board, max_steps, exact_win, &rolls, path, &len);
         if (won) {
             result.games_won++;
             total_rolls += rolls;
+            // Store shortest win sequence
             if (rolls < result.min_rolls) {
                 result.min_rolls = rolls;
                 memcpy(result.min_sequence, path, len * sizeof(int));
@@ -30,7 +33,7 @@ SimulationResult run_simulation(Board* board, int runs, int max_steps, int exact
             result.games_failed++;
         }
 
-        // Statistics: count fields traversed (including snake/ladder usage)
+        // Count how often each snake and ladder is used
         for (int j = 0, pos = 0; j < len; j++) {
             pos += path[j];
             for (int s = 0; s < board->snake_count; s++) {
@@ -45,10 +48,12 @@ SimulationResult run_simulation(Board* board, int runs, int max_steps, int exact
         }
     }
 
+    // Calculate average rolls for wins
     result.avg_rolls = result.games_won > 0 ? (double)total_rolls / result.games_won : 0.0;
     return result;
 }
 
+// Prints the collected simulation statistics
 void print_simulation_result(SimulationResult* res, Board* board) {
     printf("===== Simulation Result =====\n");
     printf("Games won: %d\n", res->games_won);
@@ -64,12 +69,14 @@ void print_simulation_result(SimulationResult* res, Board* board) {
         printf("No games were won. The board may be unsolvable.\n");
     }
 
+    // Print snake usage statistics
     printf("\n-- Snake Usage --\n");
     for (int i = 0; i <= board->size; i++) {
         if (res->snake_freq[i] > 0)
             printf("Snake at %d used %d times\n", i, res->snake_freq[i]);
     }
 
+    // Print ladder usage statistics
     printf("\n-- Ladder Usage --\n");
     for (int i = 0; i <= board->size; i++) {
         if (res->ladder_freq[i] > 0)
@@ -77,6 +84,7 @@ void print_simulation_result(SimulationResult* res, Board* board) {
     }
 }
 
+// Frees memory allocated for simulation results
 void free_simulation_result(SimulationResult* res) {
     free(res->snake_freq);
     free(res->ladder_freq);

@@ -74,7 +74,7 @@ void generate_random_jumps(Board* board, int num_ladders, int num_snakes) {
         int start = rand() % (max_pos - 1) + 1;
         int end = rand() % (max_pos - start) + start + 1;
         if (start >= end) continue;
-        if (start == max_pos || end == max_pos) continue; // No ladder on last field
+        if (start == max_pos) continue; // No ladder starts on last field
         if (is_conflict(board, start, end)) continue;
         add_ladder(board, start, end);
     }
