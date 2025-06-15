@@ -55,7 +55,7 @@ SimulationResult run_simulation(Board* board, int runs, int max_steps, int exact
 
 // Prints the collected simulation statistics
 void print_simulation_result(SimulationResult* res, Board* board) {
-    printf("===== Simulation Result =====\n");
+    printf("\n===== Simulation Result =====\n");
     printf("Games won: %d\n", res->games_won);
     printf("Games failed: %d\n", res->games_failed);
     if (res->games_won > 0) {
